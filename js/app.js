@@ -1,32 +1,46 @@
-// navigation global var
+// variables
 const navigation = document.getElementById('navbar__list');
-// sections global var
 const sections = document.querySelectorAll('section');
+const fragment = document.createDocumentFragment();
 
-// building the bar
+// building the nav bar
+function buildNav() {
+    //looping to count sections & present them
 
-const navBarMaker = () => {
+    for (let i = 0; i < sections.length; i++) {
+        const sectionId = sections[i].getAttribute('id');
+        const navItem = document.createElement('li');
+        const sectionTitle = sections[i].getAttribute('data-nav');
+        navItem.innerHTML = makeNav(sectionId, sectionTitle);
+        //add sections to document
 
-    let navEx = '';
-    // looping over all sections
-    sections.forEach(section => {
+        fragment.appendChild(navItem);
+    }
 
-        const sectionID = section.id;
-        const sectionDataNav = section.dataset.nav;
-
-        navEx += `<li><a class="menu__link" href="#${sectionID}">${sectionDataNav}</a></li>`;
-
-    });
-    // put it all together
-    navigation.innerHTML = navEx;
-
+    //add doc to ul on html
+    const navBarMaker = document.getElementById('navbar__list')
+    navBarMaker.appendChild(fragment);
 };
 
-navBarMaker();
+let buildListItems = (sections, navigation) => {
+        //for..of loop to create list item for every item in the secList and attach to the given navList
+        for (const section of sections) {
+            const newElement =
+                `<li data-link=${section.getAttribute('id')} class="menu__link">
+                <a href="#${section.getAttribute('id')}">${section.getAttribute('data-nav')}</a>
+            </li>`;
+            navigation.insertAdjacentHTML('beforeend', newElement);
+        }
+    }
+    //making the sections their own
+function makeNav(id, name) {
+    const idLinkName = `<a class ="menu__link" data-id="${id}">${name}</a>`;
+    return idLinkName;
+};
 
-// Add class 'active' to section when near top of viewport
+// Add making 'active' sections 
 
-// getting the largest value that's less or equal to the number
+// putting the active offset
 const offset = (section) => {
     return Math.floor(section.getBoundingClientRect().top);
 };
@@ -36,16 +50,16 @@ const removeActive = (section) => {
     section.classList.remove('your-active-class');
     section.style.cssText = "background-color: linear-gradient(0deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,.2) 100%)";
 };
+
 // adding the active class
 const addActive = (conditional, section) => {
     if (conditional) {
         section.classList.add('your-active-class');
-        section.style.cssText = "background-color: rgba(51,51,51,0.8) 80%";
+        section.style.cssText = "background-color: rgba(51,51,51,0.8)";
     };
 };
 
-//implementating the actual function
-
+//implementating the actual function & mathing it out
 const sectionActivation = () => {
     sections.forEach(section => {
         const elementOffset = offset(section);
@@ -59,9 +73,9 @@ const sectionActivation = () => {
 
 window.addEventListener('scroll', sectionActivation);
 
-// Scroll to anchor ID using scrollTO event
+// Linked scrolling to the event
 
-const scrolling = () => {
+const scroll = () => {
 
     const links = document.querySelectorAll('.navbar__menu a');
     links.forEach(link => {
@@ -74,4 +88,11 @@ const scrolling = () => {
 
 };
 
-scrolling();
+scroll();
+
+buildNav();
+
+// Set & show sections as active 
+window.onscroll = () => {
+    sectionActivation(sections);
+};
